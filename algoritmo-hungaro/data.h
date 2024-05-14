@@ -17,7 +17,6 @@ public:
 	void readData();
 	void printMatrixDist();
 	inline int getDimension(){ return dimension; };
-	inline int getBranchingStrategy(){return branching_strategy;};
 	inline double getDistance(int i, int j){return distMatrix[i][j]; };
 	inline double **getMatrixCost(){return distMatrix; }
 	inline double getXCoord(int i){return xCoord[i];}
@@ -31,7 +30,6 @@ private:
 	int nbOfPar;
 
 	int dimension;
-	int branching_strategy;
 
 	double **distMatrix;
 	double *xCoord, *yCoord;

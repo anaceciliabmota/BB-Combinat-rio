@@ -13,7 +13,7 @@ distMatrix(NULL){
 		exit( 1 );        
 	}
 
-	if ( qtParam > 2 )    {
+	if ( qtParam > 3 )    {
 		cout << "Too many parameters\n";
 		cout << " ./exeLaRP [Instance]"  << endl;
 		exit( 1 );
@@ -55,13 +55,6 @@ void Data::readData(){
 
 	inTSP >> dimension; // valor depois do string "DIMENSION:" é a dimensão do problema
 
-	while ( file.compare("BRANCHING_STRATEGY:") != 0 && file.compare("BRANCHING_STRATEGY" ) != 0 ) {
-		inTSP >> file;
-	}
-
-	if ( file.compare("BRANCHING_STRATEGY" ) == 0 )  inTSP >> file;
-
-	inTSP >> branching_strategy;
 
 	while ( file.compare("EDGE_WEIGHT_TYPE:") != 0 && file.compare("EDGE_WEIGHT_TYPE" ) != 0 ) {
 		inTSP >> file;
