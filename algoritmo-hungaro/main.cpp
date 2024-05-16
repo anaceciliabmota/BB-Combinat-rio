@@ -40,6 +40,7 @@ void calcularValorObj(Solucao *s, Data &data)
 
 vector<vector<int>> make_subtour(hungarian_problem_t *p, int n)
 {
+	int l;
 	vector<vector<int>> subtours;
 	bool criar_subtours = true;
 	for (int i = 0; i < n; i++)
@@ -52,12 +53,14 @@ vector<vector<int>> make_subtour(hungarian_problem_t *p, int n)
 				{
 					if (subtours[k].back() == i + 1)
 					{
+						l = k;
 						subtours[k].push_back(j + 1);
 						criar_subtours = false;
 						break;
 					}
 					else if (subtours[k].front() == j + 1)
 					{
+						l = k;
 						subtours[k].insert(subtours[k].begin(), i + 1);
 						criar_subtours = false;
 						break;
@@ -67,8 +70,24 @@ vector<vector<int>> make_subtour(hungarian_problem_t *p, int n)
 				{
 					vector<int> v = {i + 1, j + 1};
 					subtours.push_back(v);
+				}else{
+					for (int k = 0; k < subtours.size(); k++)
+					{
+						if (subtours[l].back() == subtours[k].front() && k != l)
+						{
+							subtours[l].insert(subtours[l].end(), subtours[k].begin() + 1, subtours[k].end());
+							subtours.erase(subtours.begin()+ k);
+							break;
+						}
+						else if (subtours[l].front() == subtours[k].back() && k != l)
+						{
+							subtours[l].insert(subtours[l].begin(), subtours[k].begin(), subtours[k].end()-1);
+							subtours.erase(subtours.begin()+ k);
+						}
+					}
+					criar_subtours = true;
 				}
-				criar_subtours = true;
+				
 			}
 		}
 	}
@@ -206,40 +225,7 @@ int main(int argc, char **argv)
 			cost[i][j] = data->getDistance(i, j);
 		}
 	}
-	/*
-	for(int i = 0; i < data->getDimension();i++){
-		for(int j = 0; j < data->getDimension();j++){
-			cout << cost[i][j] << " ";
-		}
-		cout << endl;
-	}
-	Node n;
-	solve_hungarian(&n, data, cost);
-	for(int i = 0; i < n.subtour.size(); i++){
-		for(int j = 0; j < n.subtour[i].size();j++){
-			cout << n.subtour[i][j] << " ";
-		}
-		cout << endl;
-	}
-	n.forbidden_arcs.push_back(make_pair(2, 10));
-	n.forbidden_arcs.push_back(make_pair(10, 2));
-	solve_hungarian(&n, data, cost);
-	for(int i = 0; i < n.subtour.size(); i++){
-		for(int j = 0; j < n.subtour[i].size();j++){
-			cout << n.subtour[i][j] << " ";
-		}
-		cout << endl;
-	}
-	n.forbidden_arcs.push_back(make_pair(2, 5));
-	n.forbidden_arcs.push_back(make_pair(5, 2));
-	solve_hungarian(&n, data, cost);
-	for(int i = 0; i < n.subtour.size(); i++){
-		for(int j = 0; j < n.subtour[i].size();j++){
-			cout << n.subtour[i][j] << " ";
-		}
-		cout << endl;
-	}*/
-
+	
 	list<Node>::iterator it;
 	Node root;
 	solve_hungarian(&root, data, cost);
@@ -258,16 +244,17 @@ int main(int argc, char **argv)
 			tree.erase(it);
 			continue;
 		}
-
-		if (node.feasible)
-		{
+		if(node.feasible)
+		{	
+			cout << "1";
 			upper_bound = min(upper_bound, node.lower_bound);
 		}
 		else
-		{ // node or root?????
+		{
 			for (int i = 0; i < node.subtour[node.chosen].size() - 1; i++)
 			{
 				Node n;
+				n. lower_bound = node.lower_bound;
 				n.forbidden_arcs = node.forbidden_arcs;
 				pair<int, int> forbidden_arc = {
 
@@ -277,31 +264,15 @@ int main(int argc, char **argv)
 				tree.push_back(n);
 			}
 		}
-		//cout << upper_bound << endl;
-		//cout << tree.size() << " ";
 		tree.erase(it);
-		//cout << tree.size() << endl;
+		
 	}
-	//cout << upper_bound << endl;
+	cout << upper_bound << endl;
 
-	/*hungarian_free(&p);
-	for (int i = 0; i < data->getDimension(); i++) delete [] cost[i];
-	delete [] cost;
-	delete data;*/
+	
 	for (int i = 0; i < data->getDimension(); i++)
 		delete[] cost[i];
 	delete[] cost;
 	delete data;
 	return 0;
 }
-/*
-hungarian_problem_t p;
-	int mode = HUNGARIAN_MODE_MINIMIZE_COST;
-	hungarian_init(&p, cost, data->getDimension(), data->getDimension(), mode); // Carregando o problema
-
-	double obj_value = hungarian_solve(&p);
-	cout << "Obj. value: " << obj_value << endl;
-
-	cout << "Assignment" << endl;
-	hungarian_print_assignment(&p);
-	*/
