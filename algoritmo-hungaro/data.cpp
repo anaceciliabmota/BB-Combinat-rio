@@ -22,7 +22,6 @@ distMatrix(NULL){
 	instaceName = instance;
 	nbOfPar = qtParam;
 	dimension = -1;
-	branching_strategy = -1;
 	explicitCoord = false;
 }
 
