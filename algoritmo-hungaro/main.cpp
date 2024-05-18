@@ -9,6 +9,7 @@ using namespace std;
 #include <limits>
 #include <iomanip>
 
+
 struct Node
 {
 	vector<pair<int, int>> forbidden_arcs;
@@ -149,7 +150,7 @@ void solve_hungarian(Node *node, Data *data, double **cost)
 	delete[] copycost;
 	hungarian_free(&p);
 }
-Node branchingStrategy(int branchingS, list<Node> &nodes, list<Node>::iterator &i)
+Node select_node(int branchingS, list<Node> &nodes, list<Node>::iterator &i)
 {
 	if (branchingS == 1)
 	{
@@ -182,41 +183,7 @@ Node branchingStrategy(int branchingS, list<Node> &nodes, list<Node>::iterator &
 	return n;
 }
 
-int main(int argc, char **argv)
-{
-
-	Data *data = new Data(argc, argv[1]);
-	// passar para uma função
-	int branchingS;
-	if (strcmp(argv[2], "BFS") == 0)
-	{
-		branchingS = 1;
-	}
-	else if (strcmp(argv[2], "DFS") == 0)
-	{
-		branchingS = 2;
-	}
-	else if (strcmp(argv[2], "LB") == 0)
-	{
-		branchingS = 3;
-	}
-	else
-	{
-		cout << "Non valid Branching Strategy" << endl;
-		return 0;
-	}
-	data->readData();
-
-	double **cost = new double *[data->getDimension()];
-	for (int i = 0; i < data->getDimension(); i++)
-	{
-		cost[i] = new double[data->getDimension()];
-		for (int j = 0; j < data->getDimension(); j++)
-		{
-			cost[i][j] = data->getDistance(i, j);
-		}
-	}
-	// passar para uma função
+Solucao BnB (double ** cost, Data * data, int branchingS){
 	list<Node>::iterator it;
 	Node root;
 	solve_hungarian(&root, data, cost);
@@ -224,10 +191,11 @@ int main(int argc, char **argv)
 	tree.push_back(root);
 
 	double upper_bound = numeric_limits<double>::infinity();
+	Node solution;
 
 	while (!tree.empty())
 	{
-		Node node = branchingStrategy(branchingS, tree, it);
+		Node node = select_node(branchingS, tree, it);
 		solve_hungarian(&node, data, cost);
 
 		if (node.lower_bound > upper_bound)
@@ -237,7 +205,10 @@ int main(int argc, char **argv)
 		}
 		if (node.feasible)
 		{
-			upper_bound = min(upper_bound, node.lower_bound);
+			if(node.lower_bound < upper_bound){
+				upper_bound = node.lower_bound;
+				solution = node;
+			}
 		}
 		else
 		{
@@ -256,7 +227,57 @@ int main(int argc, char **argv)
 		}
 		tree.erase(it);
 	}
-	cout << upper_bound << endl;
+	Solucao s;
+	s.valorObj = upper_bound;
+	s.sequencia = solution.subtour[0];
+	return s;
+}
+
+int branching_strategy(char s[]){
+	int branchingS;
+	if (strcmp(s, "BFS") == 0)
+	{
+		branchingS = 1;
+	}
+	else if (strcmp(s, "DFS") == 0)
+	{
+		branchingS = 2;
+	}
+	else if (strcmp(s, "LB") == 0)
+	{
+		branchingS = 3;
+	}
+	else
+	{
+		cout << "Non valid Branching Strategy" << endl;
+		return 0;
+	}
+	return branchingS;
+}
+
+int main(int argc, char **argv)
+{
+
+	Data *data = new Data(argc, argv[1]);
+	
+	data->readData();
+
+	int branchingS = branching_strategy(argv[2]);
+
+	double **cost = new double *[data->getDimension()];
+	for (int i = 0; i < data->getDimension(); i++)
+	{
+		cost[i] = new double[data->getDimension()];
+		for (int j = 0; j < data->getDimension(); j++)
+		{
+			cost[i][j] = data->getDistance(i, j);
+		}
+	}
+
+	Solucao s = BnB(cost, data, branchingS);
+	cout << s.valorObj << endl;
+	//exibirSolucao(&s);
+	
 	for (int i = 0; i < data->getDimension(); i++)
 		delete[] cost[i];
 	delete[] cost;
