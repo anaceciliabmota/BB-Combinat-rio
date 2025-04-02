@@ -1,6 +1,6 @@
-# Branch and Bound for the Traveling Salesman Problem (TSP)
+# Branch-and-Bound
 
-This repository contains an implementation of the **Branch and Bound (B&B)** algorithm to solve the **Traveling Salesman Problem (TSP)**. The **Hungarian algorithm** was used as a relaxation technique, but it was not implemented from scratch in this project.
+This repository contains an implementation of the **Branch-and-Bound (B&B)** algorithm to solve the **Traveling Salesman Problem (TSP)**. The **Hungarian algorithm** was used as a relaxation technique, but it was not implemented from scratch in this project.
 
 ## 📂 Repository Structure
 
