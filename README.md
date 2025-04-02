@@ -5,5 +5,5 @@ This repository contains an implementation of the **Branch and Bound (B&B)** alg
 ## 📂 Repository Structure
 
 - [`instances/`](instances/) - Contains the TSP instances used for testing.
-- [`src/](src/) - Contains the Branch and Bound implementation.
+- [`src/`](src/) - Contains the Branch and Bound implementation.
 - `README.md` - This file.
